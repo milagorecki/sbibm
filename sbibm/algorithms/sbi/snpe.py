@@ -30,7 +30,8 @@ def run(
     z_score_x: bool = True,
     z_score_theta: bool = True,
     max_num_epochs: Optional[int] = None,
-  ) -> Tuple[torch.Tensor, int, Optional[torch.Tensor]]:
+    return_posterior: Optional[bool] = False,
+) -> Tuple[torch.Tensor, int, Optional[torch.Tensor]]:
     """Runs (S)NPE from `sbi`
 
     Args:
@@ -126,6 +127,9 @@ def run(
     assert simulator.num_simulations == num_simulations
 
     samples = posterior.sample((num_samples,)).detach()
+
+    if num_rounds == 1 and return_posterior:
+        return posteriors[-1], samples, simulator.num_simulations
 
     if num_observation is not None:
         true_parameters = task.get_true_parameters(num_observation=num_observation)
